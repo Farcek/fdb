@@ -330,4 +330,12 @@ Schema.prototype.addValidation = function (field, validator, params, message, gr
 
 //</editor-fold>
 
+Schema.prototype.plugin = function (plugin, options) {
+    if (_.isFunction(plugin)) {
+        plugin(this, options)
+        return this;
+    }
+    throw  new Error('not supported plugin. request plugin : ' + plugin);
+}
+
 module.exports = Schema;
