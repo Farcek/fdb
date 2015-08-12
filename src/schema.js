@@ -188,6 +188,9 @@ Schema.prototype.load = function (data) {
 //</editor-fold>
 
 //<editor-fold desc="query">
+Schema.prototype.from = function () {
+    return this.knex()(this.dbName());
+}
 Schema.prototype.createQuery = function () {
     return new Query(this, this.knex());
 }
