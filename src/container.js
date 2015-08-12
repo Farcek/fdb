@@ -22,6 +22,9 @@ function Container(connection) {
 
         .registerField(require('./fields/enum'))
 
+        .registerField(require('./fields/date'))
+        .registerField(require('./fields/datetime'))
+
 
     ;
 }
