@@ -193,9 +193,14 @@ Schema.prototype.createQuery = function () {
 }
 Schema.prototype.select = Schema.prototype.createQuery;
 
+
 Schema.prototype.where = function () {
     var q = this.createQuery();
     return q.where.apply(q, Array.prototype.slice.call(arguments));
+}
+Schema.prototype.count = function (field) {
+    var q = this.createQuery();
+    return q.count(field);
 }
 Schema.prototype.findById = function (id) {
     var pk = this.pk();
