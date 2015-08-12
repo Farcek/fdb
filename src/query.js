@@ -93,7 +93,6 @@ Query.prototype.where = function (field, op, value) {
     var col = self.$column(field, true);
 
 
-
     if (arguments.length === 2) {
         value = op;
         op = '=';
@@ -175,6 +174,13 @@ Query.prototype.orderBy = function (field, direction) {
     var me = this;
     var col = me.$column(field, true);
     me.from().orderBy(col, direction);
+    return me;
+}
+
+Query.prototype.count = function (field) {
+    var me = this;
+    var col = me.$column(field, true);
+    me.from().count(col);
     return me;
 }
 
