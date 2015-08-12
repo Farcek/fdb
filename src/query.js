@@ -77,6 +77,10 @@ Query.prototype.$columns = function () {
     return cols;
 }
 
+Query.prototype.$$colSelected = function () {
+
+    return this.$$__colSelected__ ? true : false;
+}
 
 Query.prototype.where = function (field, op, value) {
     var self = this;
@@ -105,9 +109,14 @@ Query.prototype.where = function (field, op, value) {
 }
 
 Query.prototype.resultRaw = function (callback) {
-    var me = this;
+    var self = this;
     return helper.promise(callback, function () {
-        return me.from().select(me.$columns())
+        var q = me.from();
+        if (self.$$colSelected()) {
+            return q;
+        }
+
+        return q.select(me.$columns())
     })
 
 }
@@ -181,6 +190,7 @@ Query.prototype.count = function (field) {
     var me = this;
     var col = me.$column(field, true);
     me.from().count(col);
+    this.$$__colSelected__ = true;
     return me;
 }
 
