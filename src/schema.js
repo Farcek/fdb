@@ -191,6 +191,8 @@ Schema.prototype.load = function (data) {
 Schema.prototype.createQuery = function () {
     return new Query(this, this.knex());
 }
+Schema.prototype.select = Schema.prototype.createQuery;
+
 Schema.prototype.where = function () {
     var q = this.createQuery();
     return q.where.apply(q, Array.prototype.slice.call(arguments));

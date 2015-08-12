@@ -38,7 +38,7 @@ describe('generate value', function () {
     });
 
 
-    describe.only('int inc', function () {
+    describe('int inc', function () {
         it('container', function () {
 
             return User.container().$defaultStore()
