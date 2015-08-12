@@ -22,6 +22,10 @@
     "db",
     "orm"
   ],
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@103.48.116.25:28022/FarcekDB"
+  },
   "author": "farcek",
   "license": "ISC"
 }
