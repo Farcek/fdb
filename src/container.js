@@ -21,6 +21,7 @@ function Container(connection) {
         .registerField(require('./fields/boolean'))
 
         .registerField(require('./fields/enum'))
+        .registerField(require('./fields/json'))
 
         .registerField(require('./fields/date'))
         .registerField(require('./fields/datetime'))

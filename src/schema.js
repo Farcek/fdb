@@ -55,6 +55,8 @@ Schema.prototype.add = function (name, type, options) {
         if (type === String) return container.field('string');
         if (type === Number) return container.field('float');
         if (type === Boolean) return container.field('boolean');
+        if (type === Date) return container.field('datetime');
+        if (type === Object) return container.field('json');
         if (_.isString(type)) return container.field(type);
         if (Field.isField(type)) return type;
 

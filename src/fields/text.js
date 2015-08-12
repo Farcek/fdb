@@ -7,9 +7,13 @@ TextField.$typeName = 'text';
 
 util.inherits(TextField, Field);
 
+TextField.prototype.textType = function () {
+    var opt = this.options()
+    return opt.textType;
+}
 
 TextField.prototype.create = function (table, dbName) {
-    return table.text(dbName)
+    return table.text(dbName, this.textType())
 }
 
 

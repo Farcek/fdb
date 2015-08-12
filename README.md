@@ -16,12 +16,38 @@ Index
 - [Model define](#model-define)
 - [Model define](#model-define)
 
-Now is the time for all good men to come to
-the aid of their country. This is just a
-regular paragraph.
+fields
 
-The quick brown fox jumped over the lazy
-dog's back.
+- [boolean](#field-boolean)
+- [date](#field-date)
+- [datetime](#field-datetime)
+- [enum](#field-enum)
+- [float](#field-float)
+- [integer](#field-integer)
+- [json](#field-json)
+- [string](#field-string)
+- [text](#field-text)
+
+validations
+
+- [alpha](#validation-alpha)
+- [date](#validation-date)
+- [email](#validation-email)
+- [min](#validation-min)
+- [max](#validation-max)
+- [range](#validation-range)
+- [length](#validation-length)
+- [unique](#validation-unique)
+
+    {
+        type: Number,
+        validation:['min:15','max:50']
+    },
+    {
+        type: Number,
+        validation:['min:15','max:50']
+    }
+
 
 ### <a name="model-define"><a> Define Module
 
@@ -79,3 +105,72 @@ dog's back.
     }, {
         dbName: 'user_'
     })
+
+
+Fields
+======
+
+### <a name="field-boolean"><a> Field boolean
+
+- define : `Boolean` | 'boolean'
+- options : `none`
+
+### <a name="field-date"><a> Field Date
+
+- define : 'date'
+- options : `none`
+
+### <a name="field-datetime"><a> Field Datetime
+
+- define : `Date` | 'datetime'
+- options : `none`
+
+### <a name="field-enum"><a> Field Enum
+
+- define : 'enum'
+- options : `value`
+    1. Object
+    2. []
+
+sample :
+
+    {
+        type : 'enum',
+        value : ['Mr','Mss']
+    }
+
+or
+
+    {
+        type : 'enum',
+        value : {
+            mr: 'Men'
+            mss: 'Women'
+        }
+    }
+
+### <a name="field-float"><a> Field Float
+
+- define : `Number`|'float'
+- options : `none`
+
+
+### <a name="field-integer"><a> Field Integer
+
+- define : 'integer'
+- options : `none`
+
+### <a name="field-json"><a> Field Json
+
+- define : `Object` | 'json'
+- options : `none`
+
+### <a name="field-string"><a> Field String
+
+- define : `String` | 'string'
+- options : `len` - varchar length
+
+### <a name="field-text"><a> Field Text
+
+- define : 'text'
+- options : `textType` available values `mediumtext`,`longtext`
