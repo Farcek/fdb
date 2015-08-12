@@ -111,12 +111,12 @@ Query.prototype.where = function (field, op, value) {
 Query.prototype.resultRaw = function (callback) {
     var self = this;
     return helper.promise(callback, function () {
-        var q = me.from();
+        var q = self.from();
         if (self.$$colSelected()) {
             return q;
         }
 
-        return q.select(me.$columns())
+        return q.select(self.$columns())
     })
 
 }
