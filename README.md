@@ -66,7 +66,7 @@ validations
         active: {
             type: Boolean, dbName: 'is_active'
         },
-        active1: {
+        isAdmin: {
             type: Boolean
         },
         note: {
@@ -75,6 +75,12 @@ validations
 
     }, {
         dbName: 'user_'
+    })
+
+    User.static({
+        getAdminUsers : function(){
+          return this.where({isAdmin:true}).result()
+        }
     })
 
 
