@@ -25,6 +25,7 @@ function Container(connection) {
 
         .registerField(require('./fields/date'))
         .registerField(require('./fields/datetime'))
+        .registerField(require('./fields/decimal'))
 
 
     ;
