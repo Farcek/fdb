@@ -144,9 +144,9 @@ Query.prototype.result = function (callback) {
 Query.prototype.clone = function () {
     var me = this;
 
-    var q= new Query(me.schema(), me.knex());
-    q.$$selected = _.clone(self.$$selected);
-    q.$$q = self.$$q.clone();
+    var q = new Query(me.schema(), me.knex());
+    q.$$selected = _.clone(me.$$selected);
+    q.$$q = me.$$q.clone();
 
     return q;
 }
