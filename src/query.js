@@ -62,6 +62,11 @@ Query.prototype.selected = function () {
 
 Query.prototype.$column = function (name, hasThrow) {
     var self = this;
+    var as;
+    if(/\was\w/.test(name)){
+
+    }
+
     var field = self.schema().field(name);
     if (field)  return field.dbName();
 
@@ -183,6 +188,12 @@ Query.prototype.orderBy = function (field, direction) {
     var me = this;
     var col = me.$column(field, true);
     me.from().orderBy(col, direction);
+    return me;
+}
+Query.prototype.transacting = function (trx) {
+    var me = this;
+
+    me.from().transacting(trx.transacting());
     return me;
 }
 

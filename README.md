@@ -11,7 +11,7 @@ supported databases
 Index
 
 - [Model define](#model-define)
-- [Model define](#model-define1)
+- [Model methods](#model-modelMethods)
 - [Model define](#model-define)
 - [Model define](#model-define)
 - [Model define](#model-define)
@@ -180,3 +180,54 @@ or
 
 - define : 'text'
 - options : `textType` available values `mediumtext`,`longtext`
+
+
+### <a name="model-modelMethods"><a> Model methods
+- create(callback)
+
+    {
+        User.create({
+            name : 'fo'
+        })
+    }
+
+- save(transaction,callback)
+- delete(callback)
+
+### <a name="model-custom-model-method"><a> Model Custom model method
+
+    Schema.method({ // - multi method
+       method1:function(){
+            //this - model
+       }
+    })
+
+    // use ...
+    User.findById(1)
+    .then(function(u){
+        u.method1()
+    })
+
+    Schema.method('method2',function(){// one method
+
+    })
+
+### <a name="model-custom-static-method"><a> Model Custom static method
+
+    Schema.static({ // - multi method
+       method1:function(){
+            //this - model
+       }
+    })
+
+    Schema.static('method2',function(){// one method
+
+    })
+
+    // use ...
+    User.method2()
+        .then(function(method2Result){
+
+        })
+
+sdf
