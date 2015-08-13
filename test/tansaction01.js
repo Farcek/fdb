@@ -42,25 +42,25 @@ describe('transaction', function () {
     describe.only('select', function () {
         it('basic', function () {
 
-            return fdb.transaction(function(trx){
-                var d={
+            return fdb.transaction(function (trx) {
+                var d = {
                     u1: User
                         .create({
-                            user:'1 '+ user
+                            user: '1 ' + user
                         })
                         .then(function (u) {
                             return u.save(trx)
                         }),
                     u2: User
                         .create({
-                            user:'2 '+user
+                            user: '2 ' + user
                         })
                         .then(function (u) {
                             return u.save(trx)
                         }),
                     u3: User
                         .create({
-                            user:'3 '+user
+                            user: '3 ' + user
                         })
                         .then(function (u) {
                             return u.save(trx)
@@ -70,25 +70,23 @@ describe('transaction', function () {
                 return Promise.props(d)
                     .then(function () {
                         assert.ok(true)
-                    })
-
-                    .then(function(){
-                        User.select().count().then(function(){
-
-                        })
 
                     })
+
+
             })
 
 
+                .then(function () {
 
-
+                    return User.select().resultCount().then(function (t) {
+                        console.log('total', t)
+                        return t
+                    })
+                })
 
 
         });
-
-
-
 
 
     });
