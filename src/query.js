@@ -146,7 +146,7 @@ Query.prototype.clone = function () {
 
     var q = new Query(me.schema(), me.knex());
     q.$$selected = _.clone(me.$$selected);
-    q.$$q = me.$$q.clone();
+    q.$$q = me.from().clone();
 
     return q;
 }

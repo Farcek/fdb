@@ -343,6 +343,24 @@ Schema.prototype.addValidation = function (field, validator, params, message, gr
 
 }
 
+Schema.prototype.validation = function (groups) {
+    var self = this;
+    return function (req, res, next) {
+        var rules = self.$buildValidator(groups);
+        var validator = self.container().validator();
+
+
+        validator(req.body, rules)
+            .then(function (result) {
+                if (result.valid) return next();
+
+                next({
+                    message: ' not validated',
+                    errors: result.errors
+                })
+            }, next);
+    }
+};
 //</editor-fold>
 
 Schema.prototype.plugin = function (plugin, options) {

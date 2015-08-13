@@ -39,7 +39,7 @@ describe('transaction', function () {
     });
 
 
-    describe.only('select', function () {
+    describe('select', function () {
         it('basic', function () {
 
             return fdb.transaction(function (trx) {

@@ -63,7 +63,7 @@ describe('validation', function () {
     });
 
 
-    describe('module', function () {
+    describe.only('module', function () {
 
         it('valid module ', function () {
 
@@ -84,8 +84,8 @@ describe('validation', function () {
             return User.isValid({
                 id: 1
             })
-                .then(function (err) {
-                    console.log('result 2', err)
+                .then(function (result) {
+                    console.log('result 2', result.valid)
                 })
 
         });

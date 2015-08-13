@@ -194,7 +194,7 @@ Model.prototype.delete = function (trx, callback) {
 
                 pk.where(q, self.get(pk.name()), self);
 
-                if(trx)
+                if (trx)
                     q.transacting(trx)
 
                 return q.delete()
@@ -343,8 +343,15 @@ Model.prototype.isValid = function (group, callback) {
     return helper.promise(callback, function () {
 
 
-        return validator(self, rules, function (path, model) {
-            return Promise.resolve(model.get(path));
+        return validator(self, rules, function () {
+            return {
+                value: function (path, model) {
+                    return model.get(path)
+                },
+                has: function (path, model) {
+                    return model.hasValue(path)
+                }
+            }
         })
             .then(function (r) {
                 return r

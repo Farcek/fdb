@@ -56,7 +56,15 @@ var validators = {
             return true;
         },
         message: 'burtgeltei bna'
+    },
+    required: {
+        validator: requiredFn,
+        message: 'the required'
     }
+}
+
+function requiredFn(value, model, params) {
+    return value ? true : false
 }
 
 function buildItem(rule) {
@@ -116,35 +124,61 @@ function buildItem(rule) {
 function v(model, roles, resolve) {
     var items = [];
 
-    resolve = resolve || function (path, model) {
-        return Promise.resolve(model[path]);
-    }
+    resolve = resolve || function () {
+            return {
+                value: function (path, model) {
+                    return model[path]
+                },
+                has: function (path, model) {
+                    return (path in model)
+                }
+            };
+        }
 
     function build(rule) {
-        var fn = buildItem(rule);
+        var item = buildItem(rule);
 
-        var p = Promise.resolve(resolve(rule.field, model))
-            .then(function (value) {
-                var args = [value, model].concat(rule.params || [])
 
-                return Promise.resolve(fn.validator(value, model, rule.params))
+        var p = Promise.resolve(resolve().has(rule.field, model))
+            .then(function (has) {
 
-                    .then(function (valid) {
-                        if (valid) return {
-                            valid: true
-                        }
+                var validFn = function () {
+                    return Promise.resolve(resolve().value(rule.field, model))
+                        .then(function (value) {
+                            var args = [value, model].concat(rule.params || [])
 
-                        return Promise.resolve(fn.message(value, model, rule.params))
+                            return Promise.resolve(item.validator(value, model, rule.params))
 
-                            .then(function (message) {
-                                return {
-                                    valid: false,
-                                    field: rule.field,
-                                    message: message
-                                }
-                            })
+                                .then(function (valid) {
+                                    if (valid) return {
+                                        valid: true
+                                    }
 
-                    })
+                                    return Promise.resolve(item.message(value, model, rule.params))
+
+                                        .then(function (message) {
+                                            return {
+                                                valid: false,
+                                                field: rule.field,
+                                                message: message
+                                            }
+                                        })
+
+                                })
+                        })
+                }
+
+                if (has)
+                    return validFn()
+                else if (item.validator === requiredFn) {
+                    return validFn()
+                }
+                else
+                    return {
+                        valid: true
+                    }
+
+
             })
 
 
