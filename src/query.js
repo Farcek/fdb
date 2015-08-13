@@ -138,11 +138,6 @@ Query.prototype.result = function (callback) {
             })
     })
 
-
-    //.catch(function (err) {
-    //    console.log(err,err.stack);
-    //    if (_.isFunction(error))error(err);
-    //})
 }
 
 
@@ -210,6 +205,15 @@ Query.prototype.count = function (callback) {
             })
     })
 
+}
+
+
+Query.prototype.join = function (schema, first, operator, second) {
+    var self = this;
+    var joinSchema = self.schema().container().schema(schema);
+    self.from().join(joinSchema.dbName(), first, operator, second)
+
+    return self;
 }
 
 module.exports = Query;
