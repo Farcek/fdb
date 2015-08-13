@@ -1,5 +1,6 @@
 var helper = require('./helper');
 var Field = require('./field');
+var Transaction = require('./transaction');
 var _ = require('lodash');
 
 var Promise = require('bluebird');
@@ -135,32 +136,37 @@ Model.prototype.isModified = function (name) {
 
 
 //<editor-fold desc="save">
-Model.prototype.save = function (callback) {
+Model.prototype.save = function (trx, callback) {
     var self = this;
     var method, w8;
+
+    if (_.isFunction(trx)) {
+        callback = trx;
+        trx = undefined;
+    }
 
 
     if (self.isExists()) {
         w8 = self.$$waitPostLoad();
         method = self
-            .$update()
+            .$update(trx)
 
     } else {
         w8 = self.$$waitPostCreate();
         method = self
-            .$insert()
+            .$insert(trx)
     }
 
     return helper.promise(callback, function () {
         return w8
             .then(function () {
-                return self.schema().emit('preSave', self)
+                return self.schema().emit('preSave', self, trx)
             })
             .then(function () {
                 return method;
             })
             .then(function () {
-                return self.schema().emit('postSave', self)
+                return self.schema().emit('postSave', self, trx)
             })
             .then(function () {
                 return self
@@ -168,6 +174,40 @@ Model.prototype.save = function (callback) {
     })
 }
 //</editor-fold>
+Model.prototype.isDelete = function () {
+    return this.$isDeleted ? true : false
+}
+Model.prototype.delete = function (trx, callback) {
+    var self = this;
+
+    if (_.isFunction(trx)) {
+        callback = trx;
+        trx = undefined;
+    }
+
+    return helper.promise(callback, function () {
+        return self.schema()
+            .emit('preDelete', self, trx)
+            .then(function () {
+                var pk = self.schema().pk();
+                var q = self.schema().createQuery()
+
+                pk.where(q, self.get(pk.name()), self);
+
+                if(trx)
+                    q.transacting(trx)
+
+                return q.delete()
+                    .then(function () {
+                        self.$isDeleted = true;
+                    })
+                    ;
+            })
+            .then(function () {
+                return self.schema().emit('postDelete', self, trx)
+            })
+    })
+}
 
 //<editor-fold desc="insert">
 Model.prototype.$insertValue = function () {
@@ -187,7 +227,7 @@ Model.prototype.$insertValue = function () {
     })
     return Promise.props(data)
 }
-Model.prototype.$insert = function () {
+Model.prototype.$insert = function (trx) {
     var self = this;
 
     return self.$$waitPostCreate()
@@ -200,12 +240,15 @@ Model.prototype.$insert = function () {
                 .$insertValue()
                 .then(function (data) {
 
-                    return self.schema().createQuery()
+                    var q = self.schema().createQuery()
                         .insert(data)
-                        .resultRaw(function (dbResult) {
-                            self.$dbData(data);
-                            self.$setExists();
-                        });
+                    if (trx)
+                        q.transacting(trx);
+
+                    return q.resultRaw(function (dbResult) {
+                        self.$dbData(data);
+                        self.$setExists();
+                    });
                 });
         })
         .then(function () {
@@ -225,7 +268,7 @@ Model.prototype.$updateValue = function () {
     })
     return Promise.props(data)
 }
-Model.prototype.$update = function () {
+Model.prototype.$update = function (trx) {
     var self = this;
 
 
@@ -244,6 +287,10 @@ Model.prototype.$update = function () {
 
 
                         pk.where(q, self.get(pk.name()), self);
+
+
+                        if (trx)
+                            q.transacting(trx);
 
                         return q.resultRaw(function () {
                             return true;

@@ -62,6 +62,12 @@ Query.prototype.selected = function () {
 
 Query.prototype.$column = function (name, hasThrow) {
     var self = this;
+    var as;
+    console.log('1 -- ', name)
+    if (/\was\w/.test(name)) {
+
+    }
+
     var field = self.schema().field(name);
     if (field)  return field.dbName();
 
@@ -77,10 +83,6 @@ Query.prototype.$columns = function () {
     return cols;
 }
 
-Query.prototype.$$colSelected = function () {
-
-    return this.$$__colSelected__ ? true : false;
-}
 
 Query.prototype.where = function (field, op, value) {
     var self = this;
@@ -112,11 +114,7 @@ Query.prototype.resultRaw = function (callback) {
     var self = this;
     return helper.promise(callback, function () {
         var q = self.from();
-        if (self.$$colSelected()) {
-            return q;
-        }
-
-        return q.select(self.$columns())
+        return q;
     })
 
 }
@@ -185,13 +183,26 @@ Query.prototype.orderBy = function (field, direction) {
     me.from().orderBy(col, direction);
     return me;
 }
-
-Query.prototype.count = function (field) {
+Query.prototype.transacting = function (trx) {
     var me = this;
-    var col = me.$column(field, true);
-    me.from().count(col);
-    this.$$__colSelected__ = true;
+
+    me.from().transacting(trx.transacting());
     return me;
+}
+
+
+Query.prototype.count = function (callback) {
+    var self = this;
+    return helper.promise(callback, function () {
+        var q = self.from();
+
+        return q.select(self.knex().raw('count(*) as total'))
+            .first()
+            .then(function (d) {
+                return d.total || 0
+            })
+    })
+
 }
 
 module.exports = Query;

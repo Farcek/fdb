@@ -2,6 +2,7 @@ var knex = require('knex');
 var helper = require('./helper')
 var Field = require('./field')
 var Schema = require('./schema')
+var Transaction = require('./transaction')
 var Promise = require('bluebird')
 var _ = require('lodash')
 
@@ -106,9 +107,27 @@ Container.prototype.generateValue = function (generator, schema, field) {
 
     })
 }
+Container.prototype.$loadStore = function (storeTableName) {
+    var self = this;
 
-Container.prototype.$defaultStore = function () {
-    var self = this, storeTableName = '__inc__store__1';
+    if (self.$$defaultStore) {
+        return Promise.resolve(self.$$defaultStore)
+    }
+
+    if (self.$$defaultStore_process) {
+        return new Promise(function (resolve, reject) {
+            var w8 = function (t) {
+
+                if (self.$$defaultStore) resolve(self.$$defaultStore)
+                setTimeout(w8, t || 20)
+            }
+            w8(30)
+        })
+
+    }
+
+    self.$$defaultStore_process = true;
+
     return self.knex().schema.hasTable(storeTableName)
         .then(function (has) {
             if (has) return true;
@@ -138,12 +157,19 @@ Container.prototype.$defaultStore = function () {
             return store
         })
         .then(function (store) {
+            return self.$$defaultStore = store
+        })
+}
+Container.prototype.$defaultStore = function () {
+    var self = this, storeTableName = '__inc__store__1';
 
-            var timer;
+    return self.$loadStore(storeTableName)
+        .then(function (store) {
+            var timers = self.$storeTimes || (self.$storeTimes = {});
 
             function update(name, value) {
-                if (timer) clearTimeout(timer);
-                timer = setTimeout(function () {
+                if (timers[name]) clearTimeout(timers[name]);
+                timers[name] = setTimeout(function () {
                     self.knex()(storeTableName)
                         .update({value: value})
                         .where('name', name)
@@ -182,6 +208,13 @@ Container.prototype.$defaultStore = function () {
             }
         })
 
+
 }
 
+
+Container.prototype.transaction = function (handler) {
+    return this.knex().transaction(function (trx) {
+        return handler(new Transaction(trx));
+    })
+}
 module.exports = Container;
