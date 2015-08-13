@@ -171,9 +171,6 @@ Schema.prototype.create = function (data, callback) {
 Schema.prototype.load = function (data) {
     var self = this, model = new (this.model())({});
 
-    //console.log('data load',data)
-
-
     model
         .$dbData(data)
         .$setExists();
@@ -183,6 +180,12 @@ Schema.prototype.load = function (data) {
             model.$$postLoad = true
             return model;
         });
+
+}
+Schema.prototype.loads = function (dataArray) {
+    return Promise.map(dataArray, function (dbRow) {
+        return self.schema().load(dbRow);
+    })
 
 }
 //</editor-fold>
