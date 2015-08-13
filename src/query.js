@@ -62,11 +62,8 @@ Query.prototype.selected = function () {
 
 Query.prototype.$column = function (name, hasThrow) {
     var self = this;
-    var as;
-    console.log('1 -- ', name)
-    if (/\was\w/.test(name)) {
+    var as; // todo as add
 
-    }
 
     var field = self.schema().field(name);
     if (field)  return field.dbName();
@@ -148,6 +145,16 @@ Query.prototype.result = function (callback) {
     //})
 }
 
+
+Query.prototype.clone = function () {
+    var me = this;
+
+    var q= new Query(me.schema(), me.knex());
+    q.$$selected = _.clone(self.$$selected);
+    q.$$q = self.$$q.clone();
+
+    return q;
+}
 
 Query.prototype.update = function (data, returning) {
     var me = this;

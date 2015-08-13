@@ -79,7 +79,7 @@ describe('transaction', function () {
 
                 .then(function () {
 
-                    return User.select().resultCount().then(function (t) {
+                    return User.from().count().then(function (t) {
                         console.log('total', t)
                         return t
                     })
