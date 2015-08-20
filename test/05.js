@@ -70,7 +70,7 @@ describe('Schema advanset lazy', function () {
                 .first()
                 .result()
                 .then(function (u) {
-                    return u.note().then(function (note) {
+                    return u.note.then(function (note) {
                         assert.equal(note, txt)
                     })
                 })

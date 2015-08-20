@@ -74,7 +74,7 @@ describe('Schema advanset', function () {
                     u.note = txt
                     return u.save()
                         .then(function (u) {
-                            return u.note().then(function(note){
+                            return u.note.then(function(note){
                                 assert.equal(note, txt)
                             })
 

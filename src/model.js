@@ -72,45 +72,38 @@ Model.prototype.get = function (name) {
 
     if (field.isLazy()) {
 
-        return function (callback) {
-            return helper.promise(callback, function () {
-
-                if (self.hasValue(name)) {
-                    return Promise.resolve(field.cast(self.$get(name), this));
-                }
-
-                if (self.isNew()) {
-                    return Promise.resolve(undefined);
-                }
-
-
-                var pk = self.schema().pk();
-                var q = self.schema().createQuery();
-
-
-                pk.where(q, self.get(pk.name()), self);
-
-
-                return q
-                    .setSelect(field.name())
-                    .first()
-                    .resultRaw()
-                    .then(function (result) {
-                        console.log(12, result)
-                        var val = undefined;
-                        if (result) {
-                            val = result[field.dbName()];
-                        }
-
-                        return (self.data()[field.name()] = val)
-                    })
-                    .then(function (val) {
-                        return field.cast(val, this)
-                    })
-
-
-            })
+        if (self.hasValue(name)) {
+            return Promise.resolve(field.cast(self.$get(name), this));
         }
+
+        if (self.isNew()) {
+            return Promise.resolve(undefined);
+        }
+
+
+        var pk = self.schema().pk();
+        var q = self.schema().createQuery();
+
+
+        pk.where(q, self.get(pk.name()), self);
+
+
+        return q
+            .setSelect(field.name())
+            .first()
+            .resultRaw()
+            .then(function (result) {
+                console.log(12, result)
+                var val = undefined;
+                if (result) {
+                    val = result[field.dbName()];
+                }
+
+                return (self.data()[field.name()] = val)
+            })
+            .then(function (val) {
+                return field.cast(val, this)
+            })
     }
 
     return self.hasValue(name) && field.cast(self.$get(name), this);
@@ -360,6 +353,25 @@ Model.prototype.isValid = function (group, callback) {
 
     })
 }
+
+Model.prototype.toObject = function (options) {
+    options = options || {}
+    var self = this;
+    var lazy = options.lazy || false;
+
+    var obj = {};
+
+    self.schema().$eachFields(function (f) {
+        if(!lazy &&  f.isLazy()) return;
+
+        obj[f.name()] = self.get(f.name())
+    })
+
+    return obj
+}
+
+Model.prototype.toJSON = Model.prototype.toObject
+
 
 
 module.exports = Model;

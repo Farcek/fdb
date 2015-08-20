@@ -13,42 +13,40 @@ EnumField.prototype.values = function () {
     if (values) return values;
     throw  new Error('not defined enum values ');
 }
-EnumField.prototype.isIntEnum = function () {
-    return Array.isArray(this.values());
-}
-EnumField.prototype.isStringEnum = function () {
-    return _.isPlainObject(this.values());
+EnumField.prototype.enumType = function () {
+    return this.options().enumType || 'int';
 }
 
+EnumField.prototype.isIntDb= function () {
+    var t=this.enumType()
+    return  t == 'integer' || t === 'int';
+}
+EnumField.prototype.isStringDB = function () {
+    var t=this.enumType()
+    return  t == 'String' || t == 'string'  || t === String;
+}
+
+
+
 EnumField.prototype.create = function (table, dbName) {
-    if (this.isIntEnum())
+    if (this.isIntDb())
         return table.integer(dbName)
-    if (this.isStringEnum())
+    if (this.isStringDB())
         return table.varchar(dbName)
 
     throw new Error('not supporting enum type');
 }
 EnumField.prototype.cast = function (v, model) {
     var values = this.values();
-    if (this.isIntEnum()) {
-        return values[v];
+
+    for (var k in values) {
+        if (values[k] === v) return k;
     }
-    if (this.isStringEnum()) {
-        for (var k in values) {
-            if (values[k] === v) return k;
-        }
-        return undefined;
-    }
-    throw new Error('not supporting enum');
+    return undefined;
+
 }
 EnumField.prototype.dbCast = function (v, model) {
-    if (this.isIntEnum()) {
-        return this.values().indexOf(v);
-    }
-    if (this.isStringEnum()) {
-        return this.values()[v];
-    }
-    throw new Error('not supporting enum');
+    return this.values()[v];
 }
 
 

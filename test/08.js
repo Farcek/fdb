@@ -63,7 +63,7 @@ describe('validation', function () {
     });
 
 
-    describe.only('module', function () {
+    describe('module', function () {
 
         it('valid module ', function () {
 

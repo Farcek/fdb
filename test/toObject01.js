@@ -4,7 +4,7 @@ var FDB = require('../src/container')
 var Field = require('../src/field')
 
 
-describe('generate value', function () {
+describe('toObject', function () {
 
     var fdb = new FDB(require('./conn'));
 
@@ -15,13 +15,10 @@ describe('generate value', function () {
             pk: 1, gen: 1, dbName: 'kk'
 
         },
-        user: {
-            type: String, dbName: 'un1', notNull: 1,
-            validation: ['alpha', 'length:15:45']
-        }
+        user: String
 
     }, {
-        dbName: 'user_9'
+        dbName: 'user_to_object'
     })
 
 
@@ -29,50 +26,37 @@ describe('generate value', function () {
 
 
     before(function () {
-        console.log(22)
         return fdb.knex().schema.dropTableIfExists(User.dbName())
 
             .then(function () {
-                console.log(11)
-
                 return User.init()
             })
 
     });
 
 
-    describe('int inc', function () {
-        it('container', function () {
-
-            return User.container().$defaultStore()
-                .then(function (store) {
-                    var r = store.next('heh',true)
-
-                    assert.ok(r)
-                })
-
-
-
-        });
-
-
-        it('inc', function () {
-
+    describe('toOnkecy', function () {
+        it('basic', function () {
 
             return User.create({
                 user: user
             })
+
                 .then(function (u) {
+
                     return u.save()
                 })
-                .then(function (u) {
-                    assert.ok(u.id)
 
-                    return User.findById(u.id)
-                        .then(function (u) {
-                            assert.equal(u.user, user)
-                        })
+                .then(function (u) {
+                    console.log(u)
+
+
+
+                    console.log(JSON.stringify(u))
+
+                    return u
                 })
+
 
         });
 

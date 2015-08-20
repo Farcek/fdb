@@ -22,11 +22,12 @@ describe('Schema enum field', function () {
         active1: {
             type: Boolean
         },
-        gender: {
-            type: 'enum', dbName: 'gd', values: ['mr', 'mss']
-        },
+
         gender1: {
-            type: 'enum', dbName: 'gd1', values: {mr: 'm1', mss: 'm2'}
+            type: 'enum', dbName: 'gd1', values: {mr: 'm1', mss: 'm2'},enumType:'string'
+        },
+        gender2: {
+            type: 'enum', dbName: 'gd2', values: {mr: 10, mss: 20}
         }
 
     }, {
@@ -40,6 +41,8 @@ describe('Schema enum field', function () {
     before(function () {
         return fdb.knex().schema.dropTableIfExists(User.dbName())
             .then(function () {
+                
+
                 return User.init()
                     .then(function () {
                         return User.create({
@@ -47,8 +50,9 @@ describe('Schema enum field', function () {
                             user: user,
                             note: txt,
                             active: 1,
-                            gender: 'mr',
-                            gender1: 'mss'
+                            gender1: 'mss',
+                            gender2: 'mr'
+
                         }).then(function (u) {
                             return u.save();
                         })
@@ -57,13 +61,16 @@ describe('Schema enum field', function () {
     });
 
 
-    describe('load', function () {
+    describe.only('load', function () {
+
+         console.log(User.field('gender1').values())
+         console.log(User.field('gender2').values())
 
 
         it('load lazy', function () {
            return  User.findById(id)
                 .then(function (u) {
-                    assert.strictEqual(u.gender, 'mr')
+                    assert.strictEqual(u.gender2, 'mr')
                     assert.strictEqual(u.gender1, 'mss')
                 })
 
