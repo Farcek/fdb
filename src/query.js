@@ -151,6 +151,11 @@ Query.prototype.clone = function () {
     return q;
 }
 
+Query.prototype.delete = function () {
+    var me = this;
+    me.from().delete();
+    return me;
+}
 Query.prototype.update = function (data, returning) {
     var me = this;
     me.from().update(data, returning);

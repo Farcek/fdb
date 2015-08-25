@@ -9,6 +9,10 @@ var validators = {
         validator: validator.isAlpha,
         message: '`{0}` the value not alpha format '
     },
+    alphaNumeric: {
+        validator: validator.isAlphanumeric,
+        message: '`{0}` the value not alpha numeric format '
+    },
     date: {
         validator: validator.isDate,
         message: '`{0}` the value not Date '
@@ -168,18 +172,24 @@ function v(model, roles, resolve) {
                         })
                 }
 
+                if (item.validator === requiredFn) {
+                    if (has) return {
+                        valid: true
+                    }
+                    else return {
+                        valid: false,
+                        field: rule.field,
+                        message: 'the req req'
+                    }
+                }
+
                 if (has)
                     return validFn()
-                else if (item.validator === requiredFn) {
-                    return validFn()
-                }
                 else
                     return {
                         valid: true
                     }
-
-
-            })
+            });
 
 
         items.push(p)
