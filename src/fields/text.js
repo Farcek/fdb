@@ -16,6 +16,9 @@ TextField.prototype.create = function (table, dbName) {
     return table.text(dbName, this.textType())
 }
 
+TextField.prototype.hasDBDefaultValue = function () {
+    return false;
+}
 
 module.exports = TextField
 

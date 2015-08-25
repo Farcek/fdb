@@ -14,7 +14,7 @@ util.inherits(JsonField, Field);
 JsonField.prototype.cast = function (v, model) {
     if (_.isString(v)) {
         var pv = JSON.parse(v);
-        model.set(this.name(), pv);
+        model && model.set(this.name(), pv);
         return pv
     }
 
@@ -28,6 +28,9 @@ JsonField.prototype.create = function (table, dbName) {
     return table.json(dbName)
 }
 
+JsonField.prototype.hasDBDefaultValue = function () {
+    return false;
+}
 
 module.exports = JsonField
 

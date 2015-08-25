@@ -32,10 +32,13 @@ Field.prototype.$create = function (table) {
         if (this.isRequired()) fb.notNullable()
         else fb.nullable()
 
-        var dv = this.defaultValue();
-        if (dv) {
-            fb.defaultTo(this.cast(dv))
+        if(this.hasDBDefaultValue()){
+            var dv = this.defaultValue();
+            if (dv) {
+                fb.defaultTo(this.dbCast(dv))
+            }
         }
+
 
         var index = this.isIndexed();
 
@@ -47,7 +50,14 @@ Field.prototype.$create = function (table) {
 
 }
 //</editor-fold>
+Field.prototype.hasDBDefaultValue = function () {
 
+    return true;
+}
+Field.prototype.hasDefaultValue = function () {
+    var opt = this.options();
+    return 'defaultValue' in opt || 'default' in opt;
+}
 Field.prototype.cast = function (v, model) {
     return v
 }

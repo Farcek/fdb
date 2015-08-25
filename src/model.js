@@ -38,8 +38,14 @@ Model.prototype.$dbData = function (dbData) {
     self.schema().$eachFields(function (field) {
         var mdN = field.name();
         var dbN = field.dbName();
-        if (dbN in dbData && dbData[dbN] !== null)
-            self.$data[mdN] = dbData[dbN];
+        if (dbN in dbData) {
+            if (dbData[dbN] !== null)
+                self.$data[mdN] = dbData[dbN];
+        } else {
+            if (field.hasDefaultValue())
+                self.$data[mdN] = field.defaultValue();
+        }
+
     });
 
 
@@ -263,8 +269,6 @@ Model.prototype.$updateValue = function () {
             data[f.dbName()] = f.dbCast(self.$get(f.name(), self))
         }
     })
-
-    console.log('update data', data)
 
     return Promise.props(data)
 }
