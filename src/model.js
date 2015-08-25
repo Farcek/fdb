@@ -38,7 +38,7 @@ Model.prototype.$dbData = function (dbData) {
     self.schema().$eachFields(function (field) {
         var mdN = field.name();
         var dbN = field.dbName();
-        if (dbN in dbData)
+        if (dbN in dbData && dbData[dbN] !== null)
             self.$data[mdN] = dbData[dbN];
     });
 
@@ -64,7 +64,9 @@ Model.prototype.$get = function (name) {
     var data = this.data();
     var modifiedData = this.modifiedData();
 
-    return modifiedData[name] || data[name]
+    if (name in modifiedData) return modifiedData[name];
+
+    return data[name]
 }
 Model.prototype.get = function (name) {
     var self = this, field = this.schema().field(name);
@@ -123,6 +125,7 @@ Model.prototype.set = function (name, value) {
 Model.prototype.isModified = function (name) {
     var modifiedData = this.modifiedData();
     if (name) return name in modifiedData;
+
     return this.$modified ? true : false
 }
 //</editor-fold>
@@ -191,6 +194,7 @@ Model.prototype.delete = function (trx, callback) {
                     q.transacting(trx)
 
                 return q.delete()
+                    .resultRaw()
                     .then(function () {
                         self.$isDeleted = true;
                     })
@@ -259,6 +263,9 @@ Model.prototype.$updateValue = function () {
             data[f.dbName()] = f.dbCast(self.$get(f.name(), self))
         }
     })
+
+    console.log('update data', data)
+
     return Promise.props(data)
 }
 Model.prototype.$update = function (trx) {
@@ -362,7 +369,7 @@ Model.prototype.toObject = function (options) {
     var obj = {};
 
     self.schema().$eachFields(function (f) {
-        if(!lazy &&  f.isLazy()) return;
+        if (!lazy && f.isLazy()) return;
 
         obj[f.name()] = self.get(f.name())
     })
@@ -371,7 +378,6 @@ Model.prototype.toObject = function (options) {
 }
 
 Model.prototype.toJSON = Model.prototype.toObject
-
 
 
 module.exports = Model;
