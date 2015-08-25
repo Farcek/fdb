@@ -38,9 +38,9 @@ Model.prototype.$dbData = function (dbData) {
     self.schema().$eachFields(function (field) {
         var mdN = field.name();
         var dbN = field.dbName();
-        if (dbN in dbData) {
-            if (dbData[dbN] !== null)
-                self.$data[mdN] = dbData[dbN];
+
+        if (dbN in dbData && dbData[dbN] !== null) {
+            self.$data[mdN] = dbData[dbN];
         } else {
             if (field.hasDefaultValue())
                 self.$data[mdN] = field.defaultValue();
@@ -117,11 +117,11 @@ Model.prototype.get = function (name) {
     return self.hasValue(name) && field.cast(self.$get(name), this);
 }
 
-Model.prototype.set = function (name, value) {
+Model.prototype.set = function (name, value,hard) {
+
     var data = this.data();
     var modifiedData = this.modifiedData();
-
-    if (data[name] != value) {
+    if (!_.eq(data[name], value) || hard ) {
         modifiedData[name] = value
         this.$modified = true;
     }
