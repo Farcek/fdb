@@ -11,10 +11,15 @@ JsonField.$typeName = 'json';
 util.inherits(JsonField, Field);
 
 
-JsonField.prototype.cast = function (v) {
-    if (_.isString(v)) return JSON.parse(v);
+JsonField.prototype.cast = function (v, model) {
+    if (_.isString(v)) {
+        var pv = JSON.parse(v);
+        model.set(this.name(), pv);
+        return pv
+    }
+
     return v
-}
+};
 JsonField.prototype.dbCast = function (v) {
     return JSON.stringify(v);
 
