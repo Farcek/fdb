@@ -107,7 +107,7 @@ var helper = {
     },
     isRequired: function () {
         var opt = this.options();
-        return (opt.isRequired || opt.required || opt.notNull) ? true : false
+        return (opt.isRequired || opt.required || opt.notNull || opt.notnull) ? true : false
     },
     isIndexed: function () {
         var opt = this.options();

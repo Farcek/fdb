@@ -117,11 +117,11 @@ Model.prototype.get = function (name) {
     return self.hasValue(name) && field.cast(self.$get(name), this);
 }
 
-Model.prototype.set = function (name, value,hard) {
+Model.prototype.set = function (name, value, hard) {
 
     var data = this.data();
     var modifiedData = this.modifiedData();
-    if (!_.eq(data[name], value) || hard ) {
+    if (!_.eq(data[name], value) || hard) {
         modifiedData[name] = value
         this.$modified = true;
     }
@@ -358,7 +358,11 @@ Model.prototype.isValid = function (group, callback) {
             }
         })
             .then(function (r) {
-                return r
+                if (r.valid) return self;
+                throw {
+                    message: 'validation error',
+                    errors: r.errors
+                };
             })
 
 
@@ -369,6 +373,7 @@ Model.prototype.toObject = function (options) {
     options = options || {}
     var self = this;
     var lazy = options.lazy || false;
+
 
     var obj = {};
 
