@@ -146,6 +146,9 @@ Schema.prototype.init = function (callback) {
                     return self.emit('postDefine', self)
                 return true
             })
+            .then(function () {
+                return self
+            })
 
 
     })
@@ -214,6 +217,10 @@ Schema.prototype.findById = function (id) {
     return pk.where(this.createQuery(), id)
         .first()
         .result()
+        .then(function (model) {
+            if (model) return model;
+            throw new Error('not found model. find by id = `' + it + '`');
+        })
 }
 //</editor-fold>
 

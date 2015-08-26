@@ -360,7 +360,11 @@ Model.prototype.isValid = function (group, callback) {
             }
         })
             .then(function (r) {
-                return r
+                if (r.valid) return self;
+                throw {
+                    message: 'validation error',
+                    errors: r.errors
+                };
             })
 
 
@@ -371,6 +375,7 @@ Model.prototype.toObject = function (options) {
     options = options || {}
     var self = this;
     var lazy = options.lazy || false;
+
 
     var obj = {};
 
