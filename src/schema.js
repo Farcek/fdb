@@ -132,19 +132,16 @@ Schema.prototype.init = function (callback) {
                             field.$create(table);
                         })
                     })
-                    .then(function () {
-                        return true
-                    })
+
             })
             .then(function (setup) {
                 if (setup)
                     return self.emit('postSetup', self)
                 return true
             })
-            .then(function (setup) {
-                if (setup)
-                    return self.emit('postDefine', self)
-                return true
+            .then(function () {
+                return self.emit('postDefine', self)
+
             })
             .then(function () {
                 return self
@@ -158,7 +155,10 @@ Schema.prototype.init = function (callback) {
 
 //<editor-fold desc="create">
 Schema.prototype.create = function (data, callback) {
-    var self = this, model = new (this.model())(data);
+    var self = this, model = new (this.model())();
+
+    model.$loadData(data)
+
 
     return helper.promise(callback, function () {
 
@@ -172,10 +172,10 @@ Schema.prototype.create = function (data, callback) {
 //</editor-fold>
 //<editor-fold desc="load">
 Schema.prototype.load = function (data) {
-    var self = this, model = new (this.model())({});
+    var self = this, model = new (this.model())();
 
     model
-        .$dbData(data)
+        .$loadDBData(data)
         .$setExists();
 
     return self.emit('postLoad', model)
@@ -219,8 +219,12 @@ Schema.prototype.findById = function (id) {
         .result()
         .then(function (model) {
             if (model) return model;
-            throw new Error('not found model. find by id = `' + it + '`');
+            throw new Error('not found model. find by id = `' + id + '`');
         })
+}
+Schema.prototype.pkWhere = function (q, model) {
+    var pk = this.pk();
+    pk.where(q, model.get(pk.name()), model);
 }
 //</editor-fold>
 
@@ -261,7 +265,7 @@ Schema.prototype.method = function (name, handler) {
         for (var it in name) {
             this.method(it, name[it])
         }
-        return;
+        return this;
     }
 
     if (name in this.modelDenyNames()) throw new Error('not allow name, request name=' + name);
@@ -269,6 +273,7 @@ Schema.prototype.method = function (name, handler) {
 
     this.model().prototype[name] = handler;
 
+    return this;
 
 }
 

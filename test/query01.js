@@ -35,7 +35,7 @@ describe('query', function () {
     });
 
 
-    describe.only('query', function () {
+    describe('query', function () {
         it('or where', function () {
 
             var q = User.select();

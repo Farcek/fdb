@@ -17,8 +17,7 @@ describe('transaction', function () {
 
         },
         user: {
-            type: String, dbName: 'un1', notNull: 1,
-            validation: ['alpha', 'length:15:45']
+            type: String, dbName: 'un1', notNull: 1
         }
 
     }, {
@@ -39,7 +38,7 @@ describe('transaction', function () {
     });
 
 
-    describe('select', function () {
+    describe('transaction', function () {
         it('basic', function () {
 
             return fdb.transaction(function (trx) {
@@ -83,6 +82,50 @@ describe('transaction', function () {
                         console.log('total', t)
                         return t
                     })
+                })
+
+
+        });
+
+        it('joined', function () {
+
+            return fdb.transaction(function (trx) {
+                return User
+                    .create({
+                        user: '1 ' + user
+                    })
+                    .then(function (u) {
+                        return u.isValid('create')
+                            .then(function () {
+                                return u.save(trx)
+                                    .then(function (u) {
+                                        return Promise.each([10, 11, 12], function (cate) {
+                                            console.log(cate)
+                                            return User.create({
+                                                user: cate + ' user'
+                                            }).then(function (c) {
+                                                return c.save(trx)
+                                            })
+                                        })
+                                    })
+                                    .then(function () {
+                                        return User.create({
+                                            user: 'prev prev user ' + u.id
+                                        }).then(function (u1) {
+                                            return u1.save(trx)
+                                        })
+                                    })
+                            })
+
+                    })
+
+
+            })
+
+
+                .then(function () {
+
+                    assert.ok(true)
                 })
 
 

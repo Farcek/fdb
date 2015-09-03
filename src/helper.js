@@ -25,7 +25,8 @@ var helper = {
         return this.$options || (this.$options = {});
     },
     dbName: function () {
-        return this.options().dbName || this.name();
+        var n = this.options().dbName || this.name();
+        return n.toLowerCase();
     },
 
     privateTmp: function () {
@@ -69,13 +70,10 @@ var helper = {
                     function exec(handle) {
 
                         var result = handle.apply(null, [data]);
-                        if (Promise.is(result)) {
-                            result.then(function () {
+                        Promise.resolve(result)
+                            .then(function () {
                                 next();
-                            }, function (err) {
-                                reject(err)
-                            })
-                        } else next();
+                            }, reject)
                     }
 
                     var i = 0;

@@ -61,10 +61,9 @@ describe('Schema enum field', function () {
     });
 
 
-    describe.only('load', function () {
+    describe('load', function () {
 
-         console.log(User.field('gender1').values())
-         console.log(User.field('gender2').values())
+
 
 
         it('load lazy', function () {

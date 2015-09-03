@@ -5,11 +5,7 @@ var _ = require('lodash');
 
 var Promise = require('bluebird');
 
-function Model(data) {
-
-    this.$data = data;
-
-
+function Model() {
 }
 //<editor-fold desc="isNew || isExists">
 Model.prototype.$setExists = function () {
@@ -31,7 +27,9 @@ helper.mixin(Model.prototype, ['container', 'knex', 'schema', 'privateTmp']);
 Model.prototype.data = function () {
     return this.$data || (this.$data = {});
 }
-Model.prototype.$dbData = function (dbData) {
+Model.prototype.$loadDBData = function (data) {
+
+
 
     var self = this;
     self.$data = {};
@@ -39,11 +37,28 @@ Model.prototype.$dbData = function (dbData) {
         var mdN = field.name();
         var dbN = field.dbName();
 
-        if (dbN in dbData && dbData[dbN] !== null) {
-            self.$data[mdN] = dbData[dbN];
+        if (dbN in data && data[dbN] !== null) {
+            self.$data[mdN] = field.setCast(data[dbN], self);
         } else {
             if (field.hasDefaultValue())
-                self.$data[mdN] = field.defaultValue();
+                self.$data[mdN] = field.setCast(field.defaultValue(), self);
+        }
+
+    });
+
+
+    return self;
+}
+Model.prototype.$loadData = function (data) {
+    var self = this;
+    self.$data = {};
+    self.schema().$eachFields(function (field) {
+        var n = field.name();
+        if (n in data) {
+            self.$data[n] = field.setCast(data[n], self);
+        } else {
+            if (field.hasDefaultValue())
+                self.$data[n] = field.setCast(field.defaultValue(), self);
         }
 
     });
@@ -114,15 +129,22 @@ Model.prototype.get = function (name) {
             })
     }
 
-    return self.hasValue(name) && field.cast(self.$get(name), this);
+    return self.hasValue(name) && field.getCast(self.$get(name), this);
 }
 
+
+//Model.prototype.$set = function (name, value) {
+//    var data = this.data(), field = this.schema().field(name);
+//    data[name] = field.setCast(value, this);
+//}
 Model.prototype.set = function (name, value, hard) {
 
+
+    var field = this.schema().field(name);
     var data = this.data();
-    var modifiedData = this.modifiedData();
-    if (!_.eq(data[name], value) || hard) {
-        modifiedData[name] = value
+    if (!field.equal(data[name], value) || hard) {
+        var modifiedData = this.modifiedData();
+        modifiedData[name] = field.setCast(value, this)
         this.$modified = true;
     }
 
@@ -191,10 +213,10 @@ Model.prototype.delete = function (trx, callback) {
         return self.schema()
             .emit('preDelete', self, trx)
             .then(function () {
-                var pk = self.schema().pk();
+
                 var q = self.schema().createQuery()
 
-                pk.where(q, self.get(pk.name()), self);
+                self.schema().pkWhere(q, self);
 
                 if (trx)
                     q.transacting(trx)
@@ -251,7 +273,7 @@ Model.prototype.$insert = function (trx) {
                         q.transacting(trx);
 
                     return q.resultRaw(function (dbResult) {
-                        self.$dbData(data);
+                        self.$loadDBData(data);
                         self.$setExists();
                     });
                 });
@@ -287,12 +309,14 @@ Model.prototype.$update = function (trx) {
                 return self
                     .$updateValue()
                     .then(function (data) {
-                        var pk = self.schema().pk();
+                        //var pk = self.schema().pk();
                         var q = self.schema().createQuery()
                             .update(data)
 
 
-                        pk.where(q, self.get(pk.name()), self);
+                        //pk.where(q, self.get(pk.name()), self);
+
+                        self.schema().pkWhere(q, self);
 
 
                         if (trx)

@@ -32,7 +32,7 @@ Field.prototype.$create = function (table) {
         if (this.isRequired()) fb.notNullable()
         else fb.nullable()
 
-        if(this.hasDBDefaultValue()){
+        if (this.hasDBDefaultValue()) {
             var dv = this.defaultValue();
             if (dv) {
                 fb.defaultTo(this.dbCast(dv))
@@ -58,11 +58,17 @@ Field.prototype.hasDefaultValue = function () {
     var opt = this.options();
     return 'defaultValue' in opt || 'default' in opt;
 }
-Field.prototype.cast = function (v, model) {
+Field.prototype.setCast = function (v, model) {
+    return v
+}
+Field.prototype.getCast = function (v, model) {
     return v
 }
 Field.prototype.dbCast = function (v, model) {
     return v
+}
+Field.prototype.equal = function (a, b) {
+    return _.isEqual(a, b)
 }
 Field.prototype.where = function (query, val, model) {
 
