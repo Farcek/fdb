@@ -38,16 +38,10 @@ var helper = {
         return new Promise(function (resolve, reject) {
             action()
                 .then(function (result) {
-                    if (_.isFunction(callback)) {
-                        callback(null, result);
-                    }
-                    resolve(result);
+                    resolve(_.isFunction(callback) ? callback(false, result) : result);
                 })
                 .catch(function (err) {
-                    if (_.isFunction(callback)) {
-                        callback(err);
-                    }
-                    reject(err)
+                    reject(_.isFunction(callback) ? callback(err) : err)
                 })
         });
     },

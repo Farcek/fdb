@@ -11,7 +11,7 @@ JsonField.$typeName = 'json';
 util.inherits(JsonField, Field);
 
 
-JsonField.prototype.cast = function (v, model) {
+JsonField.prototype.getCast = function (v, model) {
     if (_.isString(v)) {
         var pv = JSON.parse(v);
         model && model.set(this.name(), pv);
