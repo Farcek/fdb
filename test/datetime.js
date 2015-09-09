@@ -36,7 +36,7 @@ describe('datetime', function () {
     });
 
 
-    describe.only('test', function () {
+    describe('test', function () {
         it('create', function () {
             var d = new Date()
 

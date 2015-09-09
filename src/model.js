@@ -30,7 +30,6 @@ Model.prototype.data = function () {
 Model.prototype.$loadDBData = function (data) {
 
 
-
     var self = this;
     self.$data = {};
     self.schema().$eachFields(function (field) {
@@ -96,7 +95,7 @@ Model.prototype.get = function (name) {
     if (field.isLazy()) {
 
         if (self.hasValue(name)) {
-            return Promise.resolve(field.cast(self.$get(name), this));
+            return Promise.resolve(field.getCast(self.$get(name), this));
         }
 
         if (self.isNew()) {
@@ -116,7 +115,7 @@ Model.prototype.get = function (name) {
             .first()
             .resultRaw()
             .then(function (result) {
-                console.log(12, result)
+
                 var val = undefined;
                 if (result) {
                     val = result[field.dbName()];
@@ -125,7 +124,7 @@ Model.prototype.get = function (name) {
                 return (self.data()[field.name()] = val)
             })
             .then(function (val) {
-                return field.cast(val, this)
+                return field.getCast(val, this)
             })
     }
 
@@ -187,6 +186,7 @@ Model.prototype.save = function (trx, callback) {
                 return self.schema().emit('preSave', self, trx)
             })
             .then(function () {
+
                 return method;
             })
             .then(function () {
@@ -259,7 +259,7 @@ Model.prototype.$insert = function (trx) {
 
     return self.$$waitPostCreate()
         .then(function () {
-            return self.schema().emit('preInsert', self)
+            return self.schema().emit('preInsert', self, trx)
         })
         .then(function () {
 
@@ -272,14 +272,16 @@ Model.prototype.$insert = function (trx) {
                     if (trx)
                         q.transacting(trx);
 
-                    return q.resultRaw(function (dbResult) {
-                        self.$loadDBData(data);
-                        self.$setExists();
-                    });
+                    return q.resultRaw()
+                        .then(function (dbResult) {
+                            self.$loadDBData(data);
+                            self.$setExists();
+                        })
+                        ;
                 });
         })
         .then(function () {
-            return self.schema().emit('postInsert', self);
+            return self.schema().emit('postInsert', self, trx);
         })
 
 }
@@ -302,7 +304,7 @@ Model.prototype.$update = function (trx) {
 
     return self.$$waitPostLoad()
         .then(function () {
-            return self.schema().emit('preUpdate', self)
+            return self.schema().emit('preUpdate', self, trx)
         })
         .then(function () {
             if (self.isModified())
@@ -329,7 +331,7 @@ Model.prototype.$update = function (trx) {
             else return false;
         })
         .then(function () {
-            return self.schema().emit('postUpdate', self);
+            return self.schema().emit('postUpdate', self, trx);
         })
 }
 //</editor-fold>
