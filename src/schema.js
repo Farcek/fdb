@@ -383,4 +383,10 @@ Schema.prototype.plugin = function (plugin, options) {
     throw  new Error('not supported plugin. request plugin : ' + plugin);
 }
 
+
+Schema.prototype.transaction = function (handler) {
+    return this.container().transaction(handler);
+}
+
+
 module.exports = Schema;

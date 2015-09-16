@@ -161,41 +161,46 @@ Model.prototype.isModified = function (name) {
 //<editor-fold desc="save">
 Model.prototype.save = function (trx, callback) {
     var self = this;
-    var method, w8;
+    var method, w8, nt = false;
 
-    if (_.isFunction(trx)) {
-        callback = trx;
-        trx = undefined;
+    function $save(trx) {
+        if (self.isExists()) {
+            w8 = self.$$waitPostLoad();
+            method = self
+                .$update(trx)
+
+        } else {
+            w8 = self.$$waitPostCreate();
+            method = self
+                .$insert(trx)
+        }
+
+        return helper.promise(callback, function () {
+            return w8
+                .then(function () {
+                    return self.schema().emit('preSave', self, trx)
+                })
+                .then(function () {
+                    return method;
+                })
+                .then(function () {
+                    return self.schema().emit('postSave', self, trx)
+                })
+                .then(function () {
+                    return self
+                })
+        })
     }
 
 
-    if (self.isExists()) {
-        w8 = self.$$waitPostLoad();
-        method = self
-            .$update(trx)
+    if (trx instanceof Transaction) return $save(trx);
+    return self
+        .schema()
+        .container()
+        .transaction(function (trx) {
+            return $save(trx);
+        });
 
-    } else {
-        w8 = self.$$waitPostCreate();
-        method = self
-            .$insert(trx)
-    }
-
-    return helper.promise(callback, function () {
-        return w8
-            .then(function () {
-                return self.schema().emit('preSave', self, trx)
-            })
-            .then(function () {
-
-                return method;
-            })
-            .then(function () {
-                return self.schema().emit('postSave', self, trx)
-            })
-            .then(function () {
-                return self
-            })
-    })
 }
 //</editor-fold>
 Model.prototype.isDelete = function () {
