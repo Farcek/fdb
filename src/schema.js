@@ -36,6 +36,10 @@ Schema.prototype.model = function () {
     return model;
 }
 
+Schema.prototype.instanceof = function (obj) {
+    return obj && obj instanceof  this.model();
+}
+
 //<editor-fold desc="field">
 
 
@@ -329,7 +333,7 @@ Schema.prototype.isValid = function (model, groups, callback) {
     })
 }
 
-Schema.prototype.addValidation = function (field, validator, params, message, groups) {
+Schema.prototype.addValidation_sdf654sd6f5s4df6s54df6 = function (field, validator, params, message, groups) {
     var self = this;
 
     if (arguments.length === 1 && _.isArray(field)) {

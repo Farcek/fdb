@@ -17,11 +17,28 @@ describe('validator', function () {
         message: ' heh ok {0}'
     }];
 
+    var roles1 = [{
+        validator: function (value, model, params) {
+
+            console.log(value,model)
+
+            return model.id || model.id2
+        },
+        message: ' id1 or id2 not definex {0}'
+    }];
+
 
     describe('01', function () {
 
-        it('module method ', function () {
-            return validator({id: 1,t:'ok'}, roles)
+        it('basic rule ', function () {
+            return validator({id: 1, t: 'ok'}, roles)
+                .then(function (r) {
+                    console.log('finish ---', r)
+                })
+        });
+
+        it.only('field null rule ', function () {
+            return validator({id1: 1, t: 'ok'}, roles1)
                 .then(function (r) {
                     console.log('finish ---', r)
                 })

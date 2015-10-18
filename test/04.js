@@ -46,7 +46,7 @@ describe('Schema advanset', function () {
     });
 
 
-    describe.only('load', function () {
+    describe('load', function () {
         this.timeout(5000)
         var n = 'farcek ' + new Date();
         var txt = 'this is lazy content'

@@ -3,7 +3,7 @@ module.exports = {
     connection: {
         host: '127.0.0.1',
         user: 'root',
-        password: '1111',
+        password: '1122',
         database: 'test',
         port: '4040'
     }

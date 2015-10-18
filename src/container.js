@@ -29,8 +29,6 @@ function Container(connection) {
         .registerField(require('./fields/decimal'))
 
 
-
-
     ;
 }
 
@@ -93,11 +91,13 @@ Container.prototype.validator = function () {
 Container.prototype.generateValue = function (generator, schema, field) {
     var self = this;
     return new Promise(function (resolve, reject) {
-        var name = schema.name() + '_' + field.name();
+        var name;
         if (_.isFunction(generator)) {
             throw new Error('todo'); // todo
         } else if (_.isString(generator)) {
             name = generator;
+        } else {
+            name = schema.name() + '_' + field.name();
         }
 
         self.$defaultStore()
