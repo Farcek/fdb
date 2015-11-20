@@ -15,7 +15,8 @@ StringField.prototype.dbLength = function () {
 
 StringField.prototype.cast = function (v) {
     if (_.isString(v)) return v;
-    return '' + v
+
+    return v ? '' + v : ''
 }
 StringField.prototype.create = function (table, dbName) {
     return table.varchar(dbName, this.dbLength())

@@ -3,6 +3,7 @@ var Promise = require('bluebird')
 var format = require('string-format')
 var _ = require('lodash')
 
+var ValidationError =  require('./errors/validation')
 
 var validators = {
     alpha: {
@@ -220,4 +221,5 @@ function v(model, roles, resolve) {
 
 }
 
-module.exports = v
+
+module.exports = v;

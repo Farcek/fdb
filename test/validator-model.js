@@ -12,7 +12,7 @@ describe('validator-model', function () {
 
         },
         user: {
-            type: String
+            type: String, required: 1
         },
         email: {
             type: String
@@ -26,14 +26,15 @@ describe('validator-model', function () {
 
     }, {
         dbName: 'valid-model',
-        validation: {
-            username: {
-                message: "not found email or user",
+        validations: [
+            {
+                field: 'user',
+                message: "not found email and user",
                 validator: function (v, model) {
                     return model.user && model.email
                 }
             }
-        }
+        ]
     })
     var user = 'farcek ' + new Date();
     var id = 55;
@@ -49,7 +50,7 @@ describe('validator-model', function () {
 
     describe.only('01', function () {
 
-        it('module method ', function () {
+        it('module method one user', function () {
             return User.create({
                 user: user
             })

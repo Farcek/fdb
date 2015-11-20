@@ -3,6 +3,8 @@ var Model = require('./model');
 var Field = require('./field');
 var Query = require('./query');
 
+var IdnotfoundError = require('./errors/idnotfound')
+
 var _ = require('lodash');
 var util = require('util');
 
@@ -223,7 +225,7 @@ Schema.prototype.findById = function (id) {
         .result()
         .then(function (model) {
             if (model) return model;
-            throw new Error('not found model. find by id = `' + id + '`');
+            throw new IdnotfoundError('not found model. find by id = `' + id + '`');
         })
 }
 Schema.prototype.pkWhere = function (q, model) {
@@ -303,13 +305,30 @@ Schema.prototype.static = function (name, handler) {
 Schema.prototype.$buildValidator = function (groups) {
 
 
-    var self = this, results = self.privateTmp()._validators_ || [];
+    var self = this; //results = self.privateTmp()._validators_ || [];
 
+    var results = []
+
+    //if (schemaValidations)
+    //    for (var k in schemaValidations) {
+    //        var vIt = schemaValidations[k];
+    //        if (Array.isArray(vIt)) {
+    //            results.concat(vIt);
+    //        } else {
+    //            results.push(it);
+    //        }
+    //
+    //    }
+
+
+    //console.log(self.$options)
 
     self.$eachFields(function (f) {
-        results = results.concat(f.validators(groups))
-    })
+        var vIt = f.validators(groups);
 
+        results = results.concat(vIt)
+    })
+    //console.log('results', results)
     return results;
 
 }
@@ -333,31 +352,6 @@ Schema.prototype.isValid = function (model, groups, callback) {
     })
 }
 
-Schema.prototype.addValidation_sdf654sd6f5s4df6s54df6 = function (field, validator, params, message, groups) {
-    var self = this;
-
-    if (arguments.length === 1 && _.isArray(field)) {
-        _.forEach(field, function (it) {
-            self.addValidation(it.field, it.validator, it.params, it.message, it.groups)
-        })
-        return self
-    }
-    if (arguments.length === 1 && _.isObject(field)) {
-        self.addValidation(field.field, field.validator, field.params, field.message, field.groups)
-        return self
-    }
-
-    var validators = self.privateTmp()._validators_ || (self.privateTmp()._validators_ = []);
-
-    validators.push({
-        field: field,
-        validator: validator,
-        params: params,
-        message: message,
-        groups: groups
-    })
-
-}
 
 Schema.prototype.validation = function (groups) {
     var self = this;

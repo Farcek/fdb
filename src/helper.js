@@ -36,7 +36,7 @@ var helper = {
     ,
     promise: function (callback, action) {
         return new Promise(function (resolve, reject) {
-            action()
+            Promise.try(action)
                 .then(function (result) {
                     resolve(_.isFunction(callback) ? callback(false, result) : result);
                 })
