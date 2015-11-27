@@ -217,7 +217,7 @@ Schema.prototype.count = function (field) {
     var q = this.createQuery();
     return q.count(field);
 }
-Schema.prototype.findById = function (id) {
+Schema.prototype.findById = function (id, ignoreThrow) {
     var pk = this.pk();
 
     return pk.where(this.createQuery(), id)
@@ -225,6 +225,8 @@ Schema.prototype.findById = function (id) {
         .result()
         .then(function (model) {
             if (model) return model;
+
+            if (ignoreThrow) return null;
             throw new IdnotfoundError('not found model. find by id = `' + id + '`');
         })
 }
