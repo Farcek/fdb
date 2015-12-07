@@ -3,7 +3,7 @@ var utils = require('util')
 var validator = require('../src/validator')
 
 
-describe('validator', function () {
+describe('validator lib', function () {
 
     var roles = [{
         field: 'id',
@@ -37,7 +37,7 @@ describe('validator', function () {
                 })
         });
 
-        it.only('field null rule ', function () {
+        it('field null rule ', function () {
             return validator({id1: 1, t: 'ok'}, roles1)
                 .then(function (r) {
                     console.log('finish ---', r)
