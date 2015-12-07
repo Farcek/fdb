@@ -19,6 +19,7 @@ function Container(connection) {
         .registerField(require('./fields/text'))
         .registerField(require('./fields/integer'))
         .registerField(require('./fields/float'))
+        .registerField(require('./fields/double'))
         .registerField(require('./fields/boolean'))
 
         .registerField(require('./fields/enum'))
