@@ -218,7 +218,7 @@ Schema.prototype.count = function (field) {
     return q.count(field);
 }
 Schema.prototype.findById = function (id, ignoreThrow) {
-    var pk = this.pk();
+    var self = this, pk = self.pk();
 
     return pk.where(this.createQuery(), id)
         .first()
@@ -227,7 +227,7 @@ Schema.prototype.findById = function (id, ignoreThrow) {
             if (model) return model;
 
             if (ignoreThrow) return null;
-            throw new IdnotfoundError('not found model. find by id = `' + id + '`');
+            throw new IdnotfoundError('`' + self.name() + '` not found model. find by id = `' + id + '`');
         })
 }
 Schema.prototype.pkWhere = function (q, model) {
